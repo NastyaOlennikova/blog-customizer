@@ -18,6 +18,7 @@ import {
 import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
 import clsx from 'clsx';
+import { useClose } from 'src/hooks/useClose';
 
 type ArticleParamsFormProps = {
 	onSubmit?: (options: ArticleStateType) => void;
@@ -46,20 +47,11 @@ export const ArticleParamsForm = ({
 
 	const formRef = useRef<HTMLElement>(null);
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (formRef.current && !formRef.current.contains(event.target as Node)) {
-				setOpen(false);
-			}
-		};
-		if (open) {
-			document.addEventListener('mousedown', handleClickOutside);
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [open]);
+	useClose({
+        isOpen: open,
+        onClose: () => setOpen(false),
+        rootRef: formRef,
+    });
 
 	useEffect(() => {
 		setFont(currentState.fontFamilyOption);
