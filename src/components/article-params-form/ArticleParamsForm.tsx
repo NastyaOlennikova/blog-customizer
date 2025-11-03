@@ -6,10 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Select } from 'src/ui/select';
 import { RadioGroup } from 'src/ui/radio-group';
 import {
-	ArticleStateType,
 	backgroundColors,
 	contentWidthArr,
-	defaultArticleState,
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -19,32 +17,42 @@ import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
 import clsx from 'clsx';
 
-type ArticleParamsFormProps = {
-	onSubmit?: (options: ArticleStateType) => void;
-	currentState: ArticleStateType;
-};
-
-export const ArticleParamsForm = ({
-	onSubmit,
-	currentState,
-}: ArticleParamsFormProps) => {
+export const ArticleParamsForm = () => {
 	const [open, setOpen] = useState(false);
 	const [selectedFont, setFont] = useState<OptionType | null>(
-		currentState.fontFamilyOption
+		fontFamilyOptions[0]
 	);
 	const [selectedFontSize, setFontSize] = useState<OptionType>(
-		currentState.fontSizeOption
+		fontSizeOptions[0]
 	);
 	const [selectedFontColor, setFontColor] = useState<OptionType | null>(
-		currentState.fontColor
+		fontColors[0]
 	);
 	const [selectedBackgroundColor, setBackgroundColor] =
-		useState<OptionType | null>(currentState.backgroundColor);
+		useState<OptionType | null>(backgroundColors[0]);
 	const [selectedContentWidth, setContentWidth] = useState<OptionType | null>(
-		currentState.contentWidth
+		contentWidthArr[0]
 	);
 
 	const formRef = useRef<HTMLElement>(null);
+
+	const handleArrowClick = () => {
+		setOpen(!open);
+	};
+
+	const handleFormReset = () => {
+		setFont(fontFamilyOptions[0]);
+		setFontSize(fontSizeOptions[0]);
+		setFontColor(fontColors[0]);
+		setBackgroundColor(backgroundColors[0]);
+		setContentWidth(contentWidthArr[0]);
+	};
+
+	const handleClickOutside = (event: MouseEvent) => {
+		if (formRef.current && !formRef.current.contains(event.target as Node)) {
+			setOpen(false);
+		}
+	};
 
 	useEffect(() => {
 		if (open) {
@@ -56,58 +64,13 @@ export const ArticleParamsForm = ({
 		};
 	}, [open]);
 
-	useEffect(() => {
-		setFont(currentState.fontFamilyOption);
-		setFontSize(currentState.fontSizeOption);
-		setFontColor(currentState.fontColor);
-		setBackgroundColor(currentState.backgroundColor);
-		setContentWidth(currentState.contentWidth);
-	}, [currentState]);
-
-	const handleArrowClick = () => {
-		setOpen(!open);
-	};
-
-	const handleFormReset = () => {
-		setFont(defaultArticleState.fontFamilyOption);
-		setFontSize(defaultArticleState.fontSizeOption);
-		setFontColor(defaultArticleState.fontColor);
-		setBackgroundColor(defaultArticleState.backgroundColor);
-		setContentWidth(defaultArticleState.contentWidth);
-
-		onSubmit?.(defaultArticleState);
-		setOpen(false);
-	};
-
-	const handleClickOutside = (event: MouseEvent) => {
-		if (formRef.current && !formRef.current.contains(event.target as Node)) {
-			setOpen(false);
-		}
-	};
-
-	const handleFormSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-
-		const newState: ArticleStateType = {
-			fontFamilyOption: selectedFont || defaultArticleState.fontFamilyOption,
-			fontSizeOption: selectedFontSize || defaultArticleState.fontSizeOption,
-			fontColor: selectedFontColor || defaultArticleState.fontColor,
-			backgroundColor:
-				selectedBackgroundColor || defaultArticleState.backgroundColor,
-			contentWidth: selectedContentWidth || defaultArticleState.contentWidth,
-		};
-
-		onSubmit?.(newState);
-		setOpen(false);
-	};
-
 	return (
 		<>
 			<ArrowButton isOpen={open} onClick={handleArrowClick} />
 			<aside
 				ref={formRef}
 				className={clsx(styles.container, open && styles.container_open)}>
-				<form className={styles.form} onSubmit={handleFormSubmit}>
+				<form className={styles.form}>
 					<Text as='h2' size={31} weight={800} uppercase dynamicLite>
 						Задайте параметры{' '}
 					</Text>
