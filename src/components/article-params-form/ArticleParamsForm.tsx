@@ -47,6 +47,11 @@ export const ArticleParamsForm = ({
 	const formRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (formRef.current && !formRef.current.contains(event.target as Node)) {
+				setOpen(false);
+			}
+		};
 		if (open) {
 			document.addEventListener('mousedown', handleClickOutside);
 		}
@@ -79,12 +84,6 @@ export const ArticleParamsForm = ({
 		setOpen(false);
 	};
 
-	const handleClickOutside = (event: MouseEvent) => {
-		if (formRef.current && !formRef.current.contains(event.target as Node)) {
-			setOpen(false);
-		}
-	};
-
 	const handleFormSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -100,16 +99,6 @@ export const ArticleParamsForm = ({
 		onSubmit?.(newState);
 		setOpen(false);
 	};
-
-	useEffect(() => {
-		if (open) {
-			document.addEventListener('mousedown', handleClickOutside);
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [open]);
 
 	return (
 		<>
